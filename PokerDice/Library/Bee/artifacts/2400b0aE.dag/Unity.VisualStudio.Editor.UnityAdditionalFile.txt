@@ -1,1 +1,1 @@
-/home/core/programming/PokerDice
+/home/core/programming/Unity/PokerDice/PokerDice
