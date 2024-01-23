@@ -1,1 +1,1 @@
-C:\Users\mathi\Documents\GitHub\PokerDice\PokerDice
+/home/core/programming/Unity/PokerDice/PokerDice
