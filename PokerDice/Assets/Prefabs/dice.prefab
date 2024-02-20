@@ -699,7 +699,7 @@ BoxCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2554825479059169238}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 9d523701b9c6f55b5a011a618c5dfa2c, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -764,6 +764,7 @@ MonoBehaviour:
   _hoverColor: {r: 1, g: 1, b: 1, a: 1}
   _selectionColor: {r: 0.991485, g: 0.71473795, b: 0.022452353, a: 1}
   Selected: 0
+  Selectabe: 0
 --- !u!114 &1441767782784347637
 MonoBehaviour:
   m_ObjectHideFlags: 0
