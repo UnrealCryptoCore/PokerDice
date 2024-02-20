@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
@@ -57,6 +58,8 @@ public class Client
             if (b) // checking if last packet is completly here else wait for the next bytes
             {
                 msgData = msgs[^1];
+            } else {
+                msgData = "";
             }
             for(int i = 0; i < (b ? msgs.Length - 1 : msgs.Length); i++)
             {

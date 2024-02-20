@@ -1,6 +1,8 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameHandler : MonoBehaviour
 {
@@ -55,4 +57,22 @@ public class GameHandler : MonoBehaviour
     {
         client.CloseConnection();
     }
+
+    public void LoadScene(string sceneName, Action action)
+    {
+        StartCoroutine(LoadSceneCoroutine(sceneName, action));
+    }
+
+    
+    IEnumerator LoadSceneCoroutine(string sceneName, Action action)
+    {
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Single);
+        while (!asyncLoad.isDone) {
+            yield return null;
+        }
+
+        action();
+        
+    }
+ 
 }

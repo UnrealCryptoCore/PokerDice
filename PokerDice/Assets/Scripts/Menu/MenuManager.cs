@@ -4,21 +4,13 @@ using System.Net.Sockets;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Web;
+using System.Runtime.Serialization;
 
 public class MenuManager : MonoBehaviour, IOverlayManager
 {
-    public enum Menu
-    {
-        PLAY_GAME = 0,
-        CREATE_GAME = 1,
-        GAME_LOBBY = 2,
-        SETTINGS = 4,
-    }
-    public struct Message
-    {
-        public string msg;
-        public int type;
-    }
+
+
     private static MenuManager _instance;
     public TMP_InputField UsernameField;
     public TMP_InputField GameIdField;
@@ -27,8 +19,6 @@ public class MenuManager : MonoBehaviour, IOverlayManager
     public GameObject[] Menus;
 
     public List<Message> Messages = new();
-
-    private int _menuIdx = -1;
 
     public static MenuManager Instance
     {
@@ -41,13 +31,11 @@ public class MenuManager : MonoBehaviour, IOverlayManager
             return _instance;
         }
     }
-
     void Awake()
     {
+
         _instance = this;
         GameHandler.Instance.overlayManager = this;
-        var nm = PDNetworkManager.Instance;
-
     }
 
     void Start()
@@ -75,11 +63,6 @@ public class MenuManager : MonoBehaviour, IOverlayManager
 
     void Update()
     {
-        if (_menuIdx != -1)
-        {
-            OpenMenu(_menuIdx);
-            _menuIdx = -1;
-        }
     }
 
     public void OnUsernameEdit(string name)
@@ -101,7 +84,7 @@ public class MenuManager : MonoBehaviour, IOverlayManager
             return;
         }
 
-        GameHandler.Instance.client.RequestCreateGame();
+        GameHandler.Instance.client.RequestCreateGame(new GameSettings());
     }
 
     public void RequestJoinGame()
@@ -168,11 +151,6 @@ public class MenuManager : MonoBehaviour, IOverlayManager
         message.type = type;
         message.msg = msg;
         Messages.Add(message);
-    }
-
-    public void OpenMenuAsync(int idx)
-    {
-        _menuIdx = idx;
     }
 
     public void OpenMenu(int idx)
