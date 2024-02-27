@@ -46,7 +46,7 @@ public class DiceThrow : MonoBehaviour
             _dice[i].SetSide(numbers[i]);
         }
         transform.DOScale(2, 1);
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(2.5f);
         transform.DOScale(1, 1);
         transform.DOLocalMoveY(200, 1);
     }

@@ -378,7 +378,11 @@ public class PokerGame
     {
         TransferFromPot(player);
         GameManager.Instance.HighlightPot();
-        GameManager.Instance.PlayerInfoBox.SetWinner(player);
+        GameManager.Instance.RunDelayedAction(() =>
+        {
+            GameManager.Instance.PlayerInfoBox.SetWinner(player);
+            GameManager.Instance.DiceThrow.gameObject.SetActive(true);
+        }, 2);
     }
 
 

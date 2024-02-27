@@ -2,10 +2,26 @@ using UnityEngine;
 
 public class GameAudio : MonoBehaviour
 {
+    private static GameAudio _instance;
+
+    public static GameAudio Instance
+    {
+        get
+        {
+            return _instance;
+        }
+    }
     void Awake()
     {
-        DontDestroyOnLoad(gameObject);
-        Debug.Log("dont destrouy");
+        if (_instance != null && _instance != this)
+        {
+            Destroy(gameObject);
+        }
+        else
+        {
+            _instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
     }
 
 }

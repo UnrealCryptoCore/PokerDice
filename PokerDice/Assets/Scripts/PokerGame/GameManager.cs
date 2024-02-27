@@ -26,6 +26,7 @@ public class GameManager : MonoBehaviour, IOverlayManager
     [SerializeField] public WinScreen WinScreen;
     [SerializeField] public DiceThrow DiceThrow;
     [SerializeField] private Color PotWinTextColor;
+    [SerializeField] private Slider _volumeSlider;
 
     private readonly List<Message> _messages = new();
     private const int FRAMES = 300;
@@ -48,6 +49,8 @@ public class GameManager : MonoBehaviour, IOverlayManager
         _instance = this;
         GameHandler.Instance.OverlayManager = this;
         WinScreen.gameObject.SetActive(false);
+        _volumeSlider.onValueChanged.AddListener(GameHandler.Instance.SetSoundVolume);
+        _volumeSlider.value = PlayerPrefs.GetFloat("volume");
     }
 
     void Start()
@@ -237,6 +240,14 @@ public class GameManager : MonoBehaviour, IOverlayManager
     public void AddChatMesage(int player, string msg)
     {
         _chat.text += _playerNames[player] + ": " + msg + "\n";
+    }
+
+    public void HideDice()
+    {
+        foreach (var die in _dice)
+        {
+            die.SetInitialState();
+        }
     }
 
     public void SimulatePhysics(List<int> numbers, List<Die> dice)
