@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
+using System.Collections;
 
 public class PokerGame
 {
@@ -134,6 +135,22 @@ public class PokerGame
         {
             SetWinner(_state.roundPlayers[0]);
             StartGame();
+            if (_settings.betting)
+            {
+                if (_state.roundPlayers[_state.bettingTurn] == _turn)
+                {
+                    EnableRoundButtons();
+                    GameManager.Instance.CheckOrCallButton.interactable = false;
+                    GameManager.Instance.FoldButton.interactable = false;
+                }
+            }
+            else
+            {
+                if (_state.roundPlayers[_state.turn] == _turn)
+                {
+                    EnableDiceRollButtons();
+                }
+            }
         }
     }
 
@@ -172,8 +189,12 @@ public class PokerGame
             if (_state.roundPlayers[_state.bettingTurn] == _turn)
             {
                 EnableRoundButtons();
+                if (_state.rolls == 0)
+                {
+                    GameManager.Instance.FoldButton.interactable = false;
+                    GameManager.Instance.CheckOrCallButton.interactable = false;
+                }
             }
-
         }
         else
         {
@@ -228,7 +249,10 @@ public class PokerGame
     {
         if (_state.rolls == 0)
         {
-            GameManager.Instance.DiceHint.SetActive(true);
+            GameManager.Instance.RunDelayedAction(() =>
+            {
+                GameManager.Instance.DiceHint.SetActive(true);
+            }, _settings.betting ? 0 : 2);
             GameManager.Instance.EndButton.interactable = false;
             return;
         }
@@ -353,8 +377,11 @@ public class PokerGame
     public void SetWinner(int player)
     {
         TransferFromPot(player);
+        GameManager.Instance.HighlightPot();
         GameManager.Instance.PlayerInfoBox.SetWinner(player);
     }
+
+
 
     public static int CalculateScore(List<int> dice)
     {

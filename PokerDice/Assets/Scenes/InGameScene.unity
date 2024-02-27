@@ -5527,7 +5527,7 @@ MonoBehaviour:
   - {fileID: 1450582592}
   _messager: []
   PlayerInfoBox: {fileID: 1572462012}
-  _potMoney: {fileID: 553304567}
+  PotMoney: {fileID: 553304567}
   FoldButton: {fileID: 1232971109}
   BetOrRaiseButton: {fileID: 1610675388}
   CheckOrCallButton: {fileID: 994982416}
@@ -5540,6 +5540,7 @@ MonoBehaviour:
   BettingValue: {fileID: 1496554377}
   WinScreen: {fileID: 2067217243}
   DiceThrow: {fileID: 1443665249}
+  PotWinTextColor: {r: 0.9762009, g: 0.61135507, b: 0.20009626, a: 0}
 --- !u!4 &1382742333
 Transform:
   m_ObjectHideFlags: 0

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -11,7 +12,7 @@ public class GameManager : MonoBehaviour, IOverlayManager
     [SerializeField] private Die[] _dice;
     [SerializeField] private GameObject[] _messager;
     [SerializeField] public PlayerInfoBox PlayerInfoBox;
-    [SerializeField] private TMP_Text _potMoney;
+    [SerializeField] public TMP_Text PotMoney;
     [SerializeField] public Button FoldButton;
     [SerializeField] public Button BetOrRaiseButton;
     [SerializeField] public Button CheckOrCallButton;
@@ -24,6 +25,7 @@ public class GameManager : MonoBehaviour, IOverlayManager
     [SerializeField] public TMP_Text BettingValue;
     [SerializeField] public WinScreen WinScreen;
     [SerializeField] public DiceThrow DiceThrow;
+    [SerializeField] private Color PotWinTextColor;
 
     private readonly List<Message> _messages = new();
     private const int FRAMES = 300;
@@ -66,7 +68,7 @@ public class GameManager : MonoBehaviour, IOverlayManager
 
     public void UpdateSliderValue()
     {
-        SetBettingSliderValue((int) BettingSlider.value);
+        SetBettingSliderValue((int)BettingSlider.value);
     }
 
     public void AddMessage(int type, string msg)
@@ -116,7 +118,7 @@ public class GameManager : MonoBehaviour, IOverlayManager
     }
     public void PlayerBetOrRaise()
     {
-        GameHandler.Instance.client.PlayerBetOrRaise((int) BettingSlider.value);
+        GameHandler.Instance.client.PlayerBetOrRaise((int)BettingSlider.value);
         DisableButtons();
     }
 
@@ -164,7 +166,7 @@ public class GameManager : MonoBehaviour, IOverlayManager
         RollDiceButton.interactable = false;
         EndButton.interactable = false;
         BettingSlider.interactable = false;
-        DiceHint.SetActive(false);       
+        DiceHint.SetActive(false);
     }
 
     public void EnableRoundButtons(int min, int max)
@@ -179,17 +181,17 @@ public class GameManager : MonoBehaviour, IOverlayManager
 
     public void SetPotMoney(int money)
     {
-        _potMoney.text = "Pot: " + money + "$";
+        PotMoney.text = "Pot: " + money + "$";
     }
 
     public void ClearPot()
     {
-        _potMoney.text = "";
+        PotMoney.text = "";
     }
 
     public void TestThrow()
     {
-        ThrowDice(new List<int>() { 5, 5, 5, 5, 5 }, new bool[] {true, true, true, true, true});
+        ThrowDice(new List<int>() { 5, 5, 5, 5, 5 }, new bool[] { true, true, true, true, true });
     }
 
     public void ThrowDice(List<int> numbers, bool[] selection)
@@ -280,6 +282,17 @@ public class GameManager : MonoBehaviour, IOverlayManager
             yield return new WaitForFixedUpdate();
         }
     }
+
+    public void HighlightPot()
+    {
+        StartCoroutine(HighlightPotRoutine());
+    }
+     IEnumerator HighlightPotRoutine()
+    {
+        PotMoney.color = PotWinTextColor;
+        yield return new WaitForSeconds(1);
+        PotMoney.color = Color.grey;
+    }
     public void SetBettingSliderValue(int value)
     {
         BettingValue.text = value + "";
@@ -291,5 +304,14 @@ public class GameManager : MonoBehaviour, IOverlayManager
     }
 
     public Die[] Dice => _dice;
+    public void RunDelayedAction(Action action, int seconds)
+    {
+        StartCoroutine(DelaydTask(action, seconds));
+    }
 
+    IEnumerator DelaydTask(Action action, int seconds)
+    {
+        yield return new WaitForSeconds(seconds);
+        action.Invoke();
+    }
 }
