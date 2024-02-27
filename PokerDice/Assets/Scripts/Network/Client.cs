@@ -11,22 +11,22 @@ public class Client
     public const string SPLITTER = "#";
     private readonly TcpClient _client;
     private NetworkStream _stream;
-    private readonly IPEndPoint _ip;
+    private IPEndPoint _ip;
     private bool _running;
     private Dictionary<string, Func<string, Packet>> _packetHandlers;
 
 
 
-    public Client(string hostname, int port)
+    public Client()
     {
         _client = new();
-        _ip = new(IPAddress.Parse(hostname), port);
         _running = false;
         _packetHandlers = new();
     }
 
-    public void StartConnection()
+    public void StartConnection(string hostname)
     {
+        _ip = new(IPAddress.Parse(hostname), 12345);
         _client.Connect(_ip);
         _stream = _client.GetStream();
         _running = true;
@@ -47,7 +47,7 @@ public class Client
             if (bytes == 0)
             {
                 _running = false;
-                GameHandler.Instance.Enqueue(() => GameHandler.Instance.overlayManager.AddMessage(0, "Lost connection to server"));
+                GameHandler.Instance.Enqueue(() => GameHandler.Instance.OverlayManager.AddMessage(0, "Lost connection to server"));
                 //Debug.LogError("Server unreachable");
                 continue;
             }

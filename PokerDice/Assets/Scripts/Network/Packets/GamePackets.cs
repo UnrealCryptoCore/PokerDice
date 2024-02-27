@@ -36,3 +36,15 @@ public class RollDicePacket
         this.selected = selected;
     }
 }
+
+[Serializable]
+public class GameChatPacket
+{
+    public string msg;
+    public int sender;
+
+    public GameChatPacket(string msg)
+    {
+        this.msg = msg;
+    }
+}

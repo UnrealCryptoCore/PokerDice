@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Die : MonoBehaviour
@@ -15,8 +13,8 @@ public class Die : MonoBehaviour
     [SerializeField] private Rigidbody _rigidbody;
     [SerializeField] private GameObject[] _detectors;
     [SerializeField] private GameObject _renderer;
-    [SerializeField] private Color _hoverColor;
-    [SerializeField] private Color _selectionColor;
+    [SerializeField] public Color HoverColor;
+    [SerializeField] public Color SelectionColor;
     private Vector3 _pos;
     private Quaternion _rot;
     private Vector3 _vel;
@@ -33,13 +31,11 @@ public class Die : MonoBehaviour
     void Awake()
     {
         _outline = gameObject.GetComponent<Outline>();
+        _outline.enabled = false;
     }
 
-    // Start is called before the first frame update
     void Start()
     {
-        _outline.enabled = false;
-        //_rigidbody.useGravity = false;
         _thrown = false;
         SaveState();
     }
@@ -51,7 +47,6 @@ public class Die : MonoBehaviour
         _vel = _rigidbody.velocity;
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (_thrown)
@@ -59,7 +54,6 @@ public class Die : MonoBehaviour
             if (CheckObjectStoppedMoving())
             {
                 _thrown = false;
-                //_rigidbody.useGravity = false;
             }
         }
     }
@@ -82,7 +76,7 @@ public class Die : MonoBehaviour
         return max;
     }
 
-    void OnMouseEnter()
+    public void OnMouseEnter()
     {
         if (!Selectabe)
         {
@@ -94,7 +88,7 @@ public class Die : MonoBehaviour
         }
     }
 
-    void OnMouseOver()
+    public void OnMouseOver()
     {
         if (!Selectabe)
         {
@@ -104,7 +98,7 @@ public class Die : MonoBehaviour
         {
             if (!_clicked)
             {
-                SetSelected(!Selected);
+                OnMouseClick();
             }
         }
         else
@@ -113,13 +107,20 @@ public class Die : MonoBehaviour
         }
     }
 
+    public void OnMouseClick()
+    {
+        SetSelected(!Selected);
+        GameHandler.Instance.client.Game.UpdateDiceRollButtons();
+
+    }
+
     public void SetSelected(bool b)
     {
         Selected = b;
-        _outline.OutlineColor = Selected ? _selectionColor : _hoverColor;
+        _outline.OutlineColor = Selected ? SelectionColor : HoverColor;
     }
 
-    void OnMouseExit()
+    public void OnMouseExit()
     {
         if (!Selectabe)
         {
@@ -173,16 +174,6 @@ public class Die : MonoBehaviour
     {
         _posRecorder = new Vector3[frames];
         _rotRecorder = new Quaternion[frames];
-    }
-
-    public void EnablePhysics()
-    {
-        _rigidbody.useGravity = true;
-    }
-
-    public void DisablePhysics()
-    {
-        _rigidbody.useGravity = false;
     }
 
     public void RecordFrame(int frame)

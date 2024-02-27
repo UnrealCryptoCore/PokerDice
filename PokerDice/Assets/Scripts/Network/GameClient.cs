@@ -3,7 +3,6 @@ using UnityEngine;
 
 public class GameClient
 {
-    //private PDNetworkManager _client;
     private Client _client;
     private string _name;
     private bool _conneted = false;
@@ -15,7 +14,7 @@ public class GameClient
 
     public GameClient()
     {
-        _client = new("127.0.0.1", 12345);
+        _client = new();
         _client.AddPacketHandler(Packet.USER_REGISTRY_PACKET, OnUserRegistryPacket);
         _client.AddPacketHandler(Packet.USER_REGISTRY_ERROR_PACKET, OnUserRegistryErrorPacket);
         _client.AddPacketHandler(Packet.GAME_CREATE_REQUEST_PACKET, OnGameJoinPacket);
@@ -27,11 +26,12 @@ public class GameClient
         _client.AddPacketHandler(Packet.GAME_FOLD_PACKET, OnPlayerFold);
         _client.AddPacketHandler(Packet.GAME_ROLL_DICE_PACKET, OnPlayerRollDice);
         _client.AddPacketHandler(Packet.GAME_END_ROLLS_PACKET, OnPlayerEndRolls);
+        _client.AddPacketHandler(Packet.GAME_CHAT_MSG_PACKET, OnChatMsg);
     }
 
-    public void StartConnection()
+    public void StartConnection(string ip)
     {
-        _client.StartConnection();
+        _client.StartConnection(ip);
         _conneted = true;
     }
 
@@ -90,17 +90,23 @@ public class GameClient
     {
         _client.SendPacket(Packet.GAME_END_ROLLS_PACKET, new EmptyPacket());
     }
+
+    public void SendChatMessage(string msg)
+    {
+        _client.SendPacket(Packet.GAME_CHAT_MSG_PACKET, new GameChatPacket(msg));
+    }
+
     Packet OnUserRegistryPacket(string data)
     {
         var packet = JsonUtility.FromJson<UserRegistryPacket>(data);
         _reconnect_token = packet.token;
-        GameHandler.Instance.overlayManager.AddMessage(1, "Succesfully registerd user.");
+        GameHandler.Instance.OverlayManager.AddMessage(1, "Succesfully registerd user.");
         Debug.Log("register user");
         return null;
     }
     Packet OnUserRegistryErrorPacket(string data)
     {
-        GameHandler.Instance.overlayManager.AddMessage(0, "Could not register user!");
+        GameHandler.Instance.OverlayManager.AddMessage(0, "Could not register user!");
         return null;
     }
 
@@ -142,7 +148,7 @@ public class GameClient
     }
     Packet OnGameRequestErrorPacket(string data)
     {
-        GameHandler.Instance.overlayManager.AddMessage(0, "error: " + data);
+        GameHandler.Instance.OverlayManager.AddMessage(0, "error: " + data);
         return null;
     }
     Packet OnPlayerEndRolls(string data)
@@ -171,10 +177,19 @@ public class GameClient
 
     Packet OnPlayerFold(string data)
     {
-        Debug.Log("Player fold");
         _game.PlayerFold();
         return null;
     }
 
+    Packet OnChatMsg(string data)
+    {
+        var packet = JsonUtility.FromJson<GameChatPacket>(data);
+        GameManager.Instance.AddChatMesage(packet.sender, packet.msg);
+        return null;
+    }
     public bool Connected => _conneted;
+
+    public PokerGame Game => _game;
+
+    public bool InGame => _gameid != null;
 }

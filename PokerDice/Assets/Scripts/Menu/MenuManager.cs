@@ -1,11 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Net.Sockets;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Web;
-using System.Runtime.Serialization;
 
 public class MenuManager : MonoBehaviour, IOverlayManager
 {
@@ -13,10 +13,21 @@ public class MenuManager : MonoBehaviour, IOverlayManager
 
     private static MenuManager _instance;
     public TMP_InputField UsernameField;
+    public TMP_InputField AddressField;
     public TMP_InputField GameIdField;
     public GameObject UsernameInputPanel;
     public GameObject[] Messager;
     public GameObject[] Menus;
+
+    [SerializeField] private Button _createGameButton;
+    [SerializeField] private TMP_InputField _moneyField;
+    [SerializeField] private TMP_InputField _minimumField;
+    [SerializeField] private TMP_InputField _maximumField;
+    [SerializeField] private TMP_InputField _maxRoundsField;
+    [SerializeField] private Toggle _bettingField;
+    [SerializeField] private AudioSource _audioSource;
+    [SerializeField] private Slider _audioSlider;
+    [SerializeField] private Toggle _audioToggle;
 
     public List<Message> Messages = new();
 
@@ -35,7 +46,7 @@ public class MenuManager : MonoBehaviour, IOverlayManager
     {
 
         _instance = this;
-        GameHandler.Instance.overlayManager = this;
+        GameHandler.Instance.OverlayManager = this;
     }
 
     void Start()
@@ -43,28 +54,90 @@ public class MenuManager : MonoBehaviour, IOverlayManager
         string username = PlayerPrefs.GetString("username");
         if (username == "")
         {
-            username = "Player" + Random.Range(0, 10000);
-            PlayerPrefs.SetString("username", username);
+            username = "Player" + UnityEngine.Random.Range(0, 10000);
+            PlayerPrefs.SetString("user", username);
         }
+        string address = PlayerPrefs.GetString("address");
+        if (address == "")
+        {
+            address = "127.0.0.1";
+            PlayerPrefs.SetString("address", address);
+        }
+
         UsernameField.text = username;
+        if (!PlayerPrefs.HasKey("volume"))
+        {
+            PlayerPrefs.SetFloat("volume", 0.1f);
+            UpdateAudio();
+        }
+        float volume = PlayerPrefs.GetFloat("volume");
+        _audioSlider.value = volume;
+        if (!PlayerPrefs.HasKey("audio"))
+        {
+            PlayerPrefs.SetInt("audio", 1);
+            SetAudioActive();
+        }
+        ConnectToServer(username, address);
+        int audio = PlayerPrefs.GetInt("audio");
+        _audioToggle.isOn = audio == 1;
+        UsernameField.onEndEdit.AddListener(OnUsernameEdit);
+        AddressField.onEndEdit.AddListener(OnAddressEdit);
+        StartCoroutine(MessageCoroutine());
+    }
+
+    private void ConnectToServer(string username, string ip)
+    {
         try
         {
-            GameHandler.Instance.client.StartConnection();
+            GameHandler.Instance.client.StartConnection(ip);
             GameHandler.Instance.client.RegisterName(username);
         }
-        catch (SocketException e)
+        catch (SocketException)
         {
             AddMessage(0, "Could not connect to server!");
-            Debug.LogWarning(e);
         }
-        UsernameField.onEndEdit.AddListener(OnUsernameEdit);
-        StartCoroutine(MessageCoroutine());
+        catch (FormatException)
+        {
+            AddMessage(0, "Could not connect to server!");
+        }
     }
 
     void Update()
     {
     }
 
+    public void UpdateCreateButton()
+    {
+        _createGameButton.interactable = VerifiyInput();
+    }
+
+    public bool VerifiyInput()
+    {
+        if (!int.TryParse(_moneyField.text, out int money) || money < 1)
+        {
+            return false;
+        }
+        if (!int.TryParse(_minimumField.text, out int minimum) || minimum < 1)
+        {
+            return false;
+        }
+        if (!int.TryParse(_maximumField.text, out int maximum) || maximum < 1)
+        {
+            return false;
+        }
+
+        if (!int.TryParse(_maxRoundsField.text, out int maxRounds) || maxRounds < 1)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    public void OnAddressEdit(string address)
+    {
+        ConnectToServer(PlayerPrefs.GetString("username"), address);
+        PlayerPrefs.SetString("address", address);
+    }
     public void OnUsernameEdit(string name)
     {
         PlayerPrefs.SetString("username", name);
@@ -83,8 +156,16 @@ public class MenuManager : MonoBehaviour, IOverlayManager
             AddMessage(0, "No connection to server!");
             return;
         }
-
-        GameHandler.Instance.client.RequestCreateGame(new GameSettings());
+        var settings = new GameSettings
+        {
+            money = int.Parse(_moneyField.text),
+            minimum = int.Parse(_minimumField.text),
+            maximum = int.Parse(_maximumField.text),
+            maxRounds = int.Parse(_maxRoundsField.text),
+            betting = _bettingField.isOn,
+            allowRaisingOnce = true,
+        };
+        GameHandler.Instance.client.RequestCreateGame(settings);
     }
 
     public void RequestJoinGame()
@@ -155,6 +236,19 @@ public class MenuManager : MonoBehaviour, IOverlayManager
 
     public void OpenMenu(int idx)
     {
+        if (GameHandler.Instance.client.InGame)
+        {
+            if (idx == (int) Menu.CREATE_GAME)
+            {
+                idx = 2;
+            }
+            else if (idx == (int) Menu.PLAY_GAME)
+            {
+                return;
+            }
+
+        }
+
         foreach (var menu in Menus)
         {
             menu.SetActive(false);
@@ -165,5 +259,17 @@ public class MenuManager : MonoBehaviour, IOverlayManager
     public void QuitApplication()
     {
         Application.Quit();
+    }
+
+    public void UpdateAudio()
+    {
+        PlayerPrefs.SetFloat("volume", _audioSlider.value);
+        GameHandler.Instance.SetSoundVolume(_audioSlider.value);
+    }
+
+    public void SetAudioActive()
+    {
+        PlayerPrefs.SetInt("audio", _audioToggle.isOn ? 1 : 0);
+        GameHandler.Instance.SetAudioActive(_audioToggle.isOn);
     }
 }

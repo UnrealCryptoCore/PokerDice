@@ -10,5 +10,5 @@ public enum Menu
     PLAY_GAME = 0,
     CREATE_GAME = 1,
     GAME_LOBBY = 2,
-    SETTINGS = 4,
+    SETTINGS = 3,
 }

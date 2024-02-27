@@ -8,7 +8,8 @@ public class GameHandler : MonoBehaviour
 {
     private static GameHandler _instance;
     public GameClient client = new();
-    public IOverlayManager overlayManager;
+    public IOverlayManager OverlayManager;
+    [SerializeField] private AudioSource _audioSource;
 
     private readonly Queue<Action> _executionQueue = new();
 
@@ -73,6 +74,16 @@ public class GameHandler : MonoBehaviour
 
         action();
         
+    }
+
+    public void SetSoundVolume(float volume)
+    {
+        _audioSource.volume = volume;
+    }
+
+    public void SetAudioActive(bool b)
+    {
+        _audioSource.enabled = b;
     }
  
 }

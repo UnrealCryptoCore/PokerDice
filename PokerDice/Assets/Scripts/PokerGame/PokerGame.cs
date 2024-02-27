@@ -1,7 +1,6 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
-using TMPro;
 
 public class PokerGame
 {
@@ -13,8 +12,6 @@ public class PokerGame
     public PokerGame(GameSettings settings, GameState state, int turn)
     {
         _settings = settings;
-        Debug.Log(_settings.betting);
-        Debug.Log(_settings.money);
         _state = state;
         _turn = turn;
     }
@@ -23,13 +20,14 @@ public class PokerGame
     {
         GameManager.Instance.SetupGame(this, playerNames, _settings.betting);
         GameManager.Instance.DisableButtons();
-        Debug.Log("started game");
         StartGame();
         if (_settings.betting)
         {
             if (_state.roundPlayers[_state.bettingTurn] == _turn)
             {
-                GameManager.Instance.BetOrRaiseButton.interactable = true;
+                EnableRoundButtons();
+                GameManager.Instance.CheckOrCallButton.interactable = false;
+                GameManager.Instance.FoldButton.interactable = false;
             }
         }
         else
@@ -39,13 +37,26 @@ public class PokerGame
             {
                 EnableDiceRollButtons();
             }
-
         }
     }
 
     public void StartGame()
     {
-        _state.turn = 0;
+        if (_state.games == _settings.maxRounds)
+        {
+            int winner = 0;
+            int score = 0;
+            for (int i = 0; i < _state.players.Count; i++)
+            {
+                if (_state.players[i] > _state.players[winner])
+                {
+                    winner = i;
+                    score = _state.players[i];
+                }
+            }
+            GameManager.Instance.WinScreen.SetWinner(winner, score);
+            return;
+        }
         _state.rolls = 0;
         _state.diceRolls = new(_state.players.Count);
         for (int i = 0; i < _state.players.Count * 5; i++)
@@ -54,12 +65,7 @@ public class PokerGame
         }
         _state.selectedDice = new bool[5];
         Array.Fill(_state.selectedDice, true);
-        foreach (var die in GameManager.Instance.Dice)
-        {
-            die.ClearOutline();
-            die.SetSelected(true);
-            die.Selectabe = false;
-        }
+        ResetDice();
         _state.raise = 0;
         _state.roundPlayers = new();
         for (int i = 0; i < _state.players.Count; i++)
@@ -69,7 +75,20 @@ public class PokerGame
         _state.games++;
         _state.bettingTurn = _settings.betting ? 0 : _state.roundPlayers.Count;
         _state.pot = _settings.betting ? 0 : 1;
+        _state.turn = 0;
+        UpdateTurn();
 
+    }
+
+    public void ResetDice()
+    {
+        foreach (var die in GameManager.Instance.Dice)
+        {
+            die.ClearOutline();
+            die.SetSelected(true);
+            die.Selectabe = false;
+        }
+        GameManager.Instance.DiceThrow.ClearOutline();
     }
 
     public void PlayerCheckOrCall()
@@ -124,6 +143,7 @@ public class PokerGame
         {
             _state.diceRolls[_state.roundPlayers[_state.turn] * 5 + i] = diceRolls[i];
         }
+        Debug.Log(string.Join(",", _state.diceRolls));
 
         _state.rolls += 1;
         if (_settings.betting)
@@ -139,7 +159,9 @@ public class PokerGame
         {
             die.SetSelected(false);
         }
+        GameManager.Instance.SetDiceActive(true);
         GameManager.Instance.ThrowDice(diceRolls, lastSelection);
+        GameManager.Instance.PlayerInfoBox.SetDiceSide(_state.roundPlayers[_state.turn], diceRolls);
         if (_state.rolls == 3)
         {
             NextTurn();
@@ -149,7 +171,7 @@ public class PokerGame
         {
             if (_state.roundPlayers[_state.bettingTurn] == _turn)
             {
-                GameManager.Instance.EnableRoundButtons();
+                EnableRoundButtons();
             }
 
         }
@@ -158,10 +180,6 @@ public class PokerGame
             if (_state.roundPlayers[_state.turn] == _turn)
             {
                 EnableDiceRollButtons();
-                if (_state.rolls > 0)
-                {
-                    GameManager.Instance.EndButton.interactable = true;
-                }
             }
         }
     }
@@ -183,25 +201,53 @@ public class PokerGame
         {
             if (_state.roundPlayers[_state.bettingTurn] == _turn)
             {
-                GameManager.Instance.EnableRoundButtons();
+                EnableRoundButtons();
             }
         }
         else
         {
             if (_state.roundPlayers[_state.turn] == _turn)
             {
-                GameManager.Instance.RollDiceButton.interactable = true;
+                GameManager.Instance.DiceHint.SetActive(true);
             }
         }
     }
 
     public void EnableDiceRollButtons()
     {
-        GameManager.Instance.RollDiceButton.interactable = true;
-        for(int i=0; i<_state.selectedDice.Length; i++)
+        UpdateDiceRollButtons();
+        for (int i = 0; i < _state.selectedDice.Length; i++)
         {
             GameManager.Instance.Dice[i].Selectabe = _state.rolls > 0 && _state.selectedDice[i];
             GameManager.Instance.Dice[i].ClearOutline();
+        }
+        GameManager.Instance.DiceThrow.ClearOutline();
+    }
+
+    public void UpdateDiceRollButtons()
+    {
+        if (_state.rolls == 0)
+        {
+            GameManager.Instance.DiceHint.SetActive(true);
+            GameManager.Instance.EndButton.interactable = false;
+            return;
+        }
+
+        int selected = 0;
+        foreach (var die in GameManager.Instance.Dice)
+        {
+            selected += die.Selected ? 1 : 0;
+        }
+
+        if (selected == 0)
+        {
+            GameManager.Instance.DiceHint.SetActive(false);
+            GameManager.Instance.EndButton.interactable = true;
+        }
+        else
+        {
+            GameManager.Instance.DiceHint.SetActive(true);
+            GameManager.Instance.EndButton.interactable = false;
         }
     }
 
@@ -241,25 +287,25 @@ public class PokerGame
         {
             if (_settings.betting & _state.roundPlayers[_state.bettingTurn] == _turn)
             {
-                GameManager.Instance.EnableRoundButtons();
+                EnableRoundButtons();
             }
             return; // not all players have set their bet
         }
         if (_state.roundPlayers[_state.turn] == _turn)
         {
             EnableDiceRollButtons();
-            if (_state.rolls > 0)
-            {
-                GameManager.Instance.EndButton.interactable = true;
-            }
         }
+    }
+
+    private void EnableRoundButtons()
+    {
+        GameManager.Instance.EnableRoundButtons(Math.Max(_state.raise, _settings.minimum), Math.Min(_settings.maximum, _state.players[_turn]));
     }
 
     private void NextTurn()
     {
         if (_settings.betting)
         {
-
             _state.bettingTurn = 0;
         }
         else
@@ -269,14 +315,10 @@ public class PokerGame
         _state.turn += 1;
         _state.rolls = 0;
         Array.Fill(_state.selectedDice, true);
-        foreach (var die in GameManager.Instance.Dice)
-        {
-            die.ClearOutline();
-            die.SetSelected(true);
-            die.Selectabe = false;
-        }
+        ResetDice();
         if (_state.turn < _state.roundPlayers.Count)
         {
+            UpdateTurn();
             return;
         }
         _state.turn = 0;
@@ -303,10 +345,15 @@ public class PokerGame
         StartGame();
     }
 
+    private void UpdateTurn()
+    {
+        GameManager.Instance.PlayerInfoBox.SetPlayerTurn(_state.roundPlayers[_state.turn]);
+    }
+
     public void SetWinner(int player)
     {
         TransferFromPot(player);
-        Debug.Log("player " + player + " won the game");
+        GameManager.Instance.PlayerInfoBox.SetWinner(player);
     }
 
     public static int CalculateScore(List<int> dice)
@@ -372,7 +419,7 @@ public class PokerGame
             {
                 return 1_000_000 + idx + 1;
             }
-            else
+            else if (count[0] > 0)
             {
                 return 100_000 + idx + 1;
             }
@@ -413,6 +460,8 @@ public class GameSettings
     public int minimum;
     public int maximum;
     public bool betting;
+    public bool allowRaisingOnce;
+    public int maxRounds;
 
 }
 
@@ -427,9 +476,7 @@ public class GameState
     public int bettingTurn;
     public int raise;
     public List<int> roundPlayers;
-
     public List<int> players;
-
     public int games;
 
 }

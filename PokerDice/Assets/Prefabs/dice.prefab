@@ -591,15 +591,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 3552c268a73c11ab9974ba48c57f5f81, type: 3}
       propertyPath: m_LocalScale.x
-      value: 10
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 3552c268a73c11ab9974ba48c57f5f81, type: 3}
       propertyPath: m_LocalScale.y
-      value: 10
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 3552c268a73c11ab9974ba48c57f5f81, type: 3}
       propertyPath: m_LocalScale.z
-      value: 10
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 3552c268a73c11ab9974ba48c57f5f81, type: 3}
       propertyPath: m_LocalPosition.x
@@ -761,8 +761,8 @@ MonoBehaviour:
   - {fileID: 9170272419413091917}
   - {fileID: 7182245771873552578}
   _renderer: {fileID: 1771373311589055438}
-  _hoverColor: {r: 1, g: 1, b: 1, a: 1}
-  _selectionColor: {r: 0.991485, g: 0.71473795, b: 0.022452353, a: 1}
+  HoverColor: {r: 1, g: 1, b: 1, a: 0.8235294}
+  SelectionColor: {r: 1, g: 0.61761737, b: 0.16595572, a: 0.7647059}
   Selected: 0
   Selectabe: 0
 --- !u!114 &1441767782784347637

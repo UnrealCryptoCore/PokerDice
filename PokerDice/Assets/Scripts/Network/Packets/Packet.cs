@@ -18,6 +18,7 @@ public class Packet
     public const string GAME_ANTE_PACKET = "GAME_ANTE";
     public const string GAME_JOIN_PACKET = "GAME_JOIN";
     public const string GAME_START_PACKET = "GAME_START";
+    public const string GAME_CHAT_MSG_PACKET = "GAME_CHAT_MSG";
     public const string USER_REGISTRY_ERROR_PACKET = "USER_REGISTRY_ERROR";
     public const string GAME_REQUEST_ERROR_PACKET = "GAME_REQUEST_ERROR";
 
