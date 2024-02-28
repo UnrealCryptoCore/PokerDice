@@ -18,7 +18,7 @@ public class GameManager : MonoBehaviour, IOverlayManager
     [SerializeField] public Button CheckOrCallButton;
     [SerializeField] public Button RollDiceButton;
     [SerializeField] public Button EndButton;
-    [SerializeField] public GameObject DiceHint;
+    [SerializeField] public ButtonRollHint DiceHint;
     [SerializeField] public Slider BettingSlider;
     [SerializeField] private TMP_Text _chat;
     [SerializeField] private TMP_InputField _chatInput;
@@ -63,7 +63,7 @@ public class GameManager : MonoBehaviour, IOverlayManager
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && DiceHint.activeSelf)
+        if (Input.GetKeyDown(KeyCode.Space) && DiceHint.Text[1].activeSelf)
         {
             GameHandler.Instance.client.PlayerRollDice();
             DisableButtons();
@@ -170,7 +170,7 @@ public class GameManager : MonoBehaviour, IOverlayManager
         RollDiceButton.interactable = false;
         EndButton.interactable = false;
         BettingSlider.interactable = false;
-        DiceHint.SetActive(false);
+        DiceHint.Deactivate();
     }
 
     public void EnableRoundButtons(int min, int max)
@@ -204,6 +204,8 @@ public class GameManager : MonoBehaviour, IOverlayManager
         List<int> diceNumbers = new(5);
         for (int i = 0; i < _dice.Length; i++)
         {
+            _dice[i].Selectable = false;
+            _dice[i].SetSelected(false);
             if (!selection[i])
             {
                 continue;
@@ -312,6 +314,7 @@ public class GameManager : MonoBehaviour, IOverlayManager
 
     public void BackToMenu()
     {
+        GameHandler.Instance.client.QuitGame();
         SceneManager.LoadScene("Menu");
     }
 

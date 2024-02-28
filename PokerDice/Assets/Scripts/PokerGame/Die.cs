@@ -25,7 +25,7 @@ public class Die : MonoBehaviour
     private Quaternion[] _rotRecorder;
     public bool Selected = false;
 
-    public bool Selectabe;
+    public bool Selectable;
     private bool _clicked = false;
 
     void Awake()
@@ -78,7 +78,7 @@ public class Die : MonoBehaviour
 
     public void OnMouseEnter()
     {
-        if (!Selectabe)
+        if (!Selectable)
         {
             return;
         }
@@ -90,7 +90,7 @@ public class Die : MonoBehaviour
 
     public void OnMouseOver()
     {
-        if (!Selectabe)
+        if (!Selectable)
         {
             return;
         }
@@ -122,7 +122,7 @@ public class Die : MonoBehaviour
 
     public void OnMouseExit()
     {
-        if (!Selectabe)
+        if (!Selectable)
         {
             return;
         }

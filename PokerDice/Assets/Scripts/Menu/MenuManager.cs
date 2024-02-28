@@ -9,8 +9,8 @@ using UnityEngine.UI;
 public class MenuManager : MonoBehaviour, IOverlayManager
 {
 
-
     private static MenuManager _instance;
+    private static bool _initialzed = false;
     public TMP_InputField UsernameField;
     public TMP_InputField AddressField;
     public TMP_InputField GameIdField;
@@ -50,38 +50,42 @@ public class MenuManager : MonoBehaviour, IOverlayManager
 
     void Start()
     {
-        string username = PlayerPrefs.GetString("username");
-        if (username == "")
+        if (!_initialzed)
         {
-            username = "Player" + UnityEngine.Random.Range(0, 10000);
-            PlayerPrefs.SetString("user", username);
+            string username = PlayerPrefs.GetString("username");
+            if (username == "")
+            {
+                username = "Player" + UnityEngine.Random.Range(0, 10000);
+                PlayerPrefs.SetString("user", username);
+            }
+            string address = PlayerPrefs.GetString("address");
+            if (address == "")
+            {
+                address = "127.0.0.1";
+                PlayerPrefs.SetString("address", address);
+            }
+            UsernameField.text = username;
+            AddressField.text = address;
+            if (!PlayerPrefs.HasKey("volume"))
+            {
+                PlayerPrefs.SetFloat("volume", 0.1f);
+                UpdateAudio();
+            }
+            float volume = PlayerPrefs.GetFloat("volume");
+            _audioSlider.value = volume;
+            if (!PlayerPrefs.HasKey("audio"))
+            {
+                PlayerPrefs.SetInt("audio", 1);
+                SetAudioActive();
+            }
+            ConnectToServer(username, address);
+            int audio = PlayerPrefs.GetInt("audio");
+            _audioToggle.isOn = audio == 1;
+            UsernameField.onEndEdit.AddListener(OnUsernameEdit);
+            AddressField.onEndEdit.AddListener(OnAddressEdit);
+            StartCoroutine(MessageCoroutine());
+            _initialzed = true;
         }
-        string address = PlayerPrefs.GetString("address");
-        if (address == "")
-        {
-            address = "127.0.0.1";
-            PlayerPrefs.SetString("address", address);
-        }
-
-        UsernameField.text = username;
-        if (!PlayerPrefs.HasKey("volume"))
-        {
-            PlayerPrefs.SetFloat("volume", 0.1f);
-            UpdateAudio();
-        }
-        float volume = PlayerPrefs.GetFloat("volume");
-        _audioSlider.value = volume;
-        if (!PlayerPrefs.HasKey("audio"))
-        {
-            PlayerPrefs.SetInt("audio", 1);
-            SetAudioActive();
-        }
-        ConnectToServer(username, address);
-        int audio = PlayerPrefs.GetInt("audio");
-        _audioToggle.isOn = audio == 1;
-        UsernameField.onEndEdit.AddListener(OnUsernameEdit);
-        AddressField.onEndEdit.AddListener(OnAddressEdit);
-        StartCoroutine(MessageCoroutine());
     }
 
     private void ConnectToServer(string username, string ip)
@@ -237,11 +241,11 @@ public class MenuManager : MonoBehaviour, IOverlayManager
     {
         if (GameHandler.Instance.client.InGame)
         {
-            if (idx == (int) Menu.CREATE_GAME)
+            if (idx == (int)Menu.CREATE_GAME)
             {
                 idx = 2;
             }
-            else if (idx == (int) Menu.PLAY_GAME)
+            else if (idx == (int)Menu.PLAY_GAME)
             {
                 return;
             }

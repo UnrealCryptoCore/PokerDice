@@ -61,6 +61,7 @@ public class PokerGame
             }, 4);
             return;
         }
+        GameManager.Instance.BettingSlider.value = _settings.minimum;
         _state.rolls = 0;
         _state.diceRolls = new(_state.players.Count);
         for (int i = 0; i < _state.players.Count * 5; i++)
@@ -90,7 +91,7 @@ public class PokerGame
         {
             die.ClearOutline();
             die.SetSelected(true);
-            die.Selectabe = false;
+            die.Selectable = false;
         }
         GameManager.Instance.DiceThrow.ClearOutline();
     }
@@ -192,7 +193,7 @@ public class PokerGame
             if (_state.roundPlayers[_state.bettingTurn] == _turn)
             {
                 EnableRoundButtons();
-                if (_state.rolls == 0)
+                if (_state.rolls == 0 && _state.turn == 0)
                 {
                     GameManager.Instance.FoldButton.interactable = false;
                     GameManager.Instance.CheckOrCallButton.interactable = false;
@@ -232,7 +233,7 @@ public class PokerGame
         {
             if (_state.roundPlayers[_state.turn] == _turn)
             {
-                GameManager.Instance.DiceHint.SetActive(true);
+                GameManager.Instance.DiceHint.SetActive(true, true);
             }
         }
     }
@@ -242,7 +243,7 @@ public class PokerGame
         UpdateDiceRollButtons();
         for (int i = 0; i < _state.selectedDice.Length; i++)
         {
-            GameManager.Instance.Dice[i].Selectabe = _state.rolls > 0 && _state.selectedDice[i];
+            GameManager.Instance.Dice[i].Selectable = _state.rolls > 0 && _state.selectedDice[i];
             GameManager.Instance.Dice[i].ClearOutline();
         }
         GameManager.Instance.DiceThrow.ClearOutline();
@@ -254,7 +255,7 @@ public class PokerGame
         {
             GameManager.Instance.RunDelayedAction(() =>
             {
-                GameManager.Instance.DiceHint.SetActive(true);
+                GameManager.Instance.DiceHint.SetActive(true, true);
             }, _settings.betting ? 0 : 2);
             GameManager.Instance.EndButton.interactable = false;
             return;
@@ -268,12 +269,12 @@ public class PokerGame
 
         if (selected == 0)
         {
-            GameManager.Instance.DiceHint.SetActive(false);
+            GameManager.Instance.DiceHint.SetActive(false, true);
             GameManager.Instance.EndButton.interactable = true;
         }
         else
         {
-            GameManager.Instance.DiceHint.SetActive(true);
+            GameManager.Instance.DiceHint.SetActive(true, true);
             GameManager.Instance.EndButton.interactable = false;
         }
     }
@@ -441,7 +442,7 @@ public class PokerGame
             }
         }
         bool b = true;
-        for (int i = 1; i < count.Length - 1; i++)
+        for (int i = 1; i < count.Length - 1; i++) // bug fix
         {
             if (count[i] == 0)
             {
@@ -469,7 +470,7 @@ public class PokerGame
             int temp = -1;
             for (int i = 0; i < count.Length; i++)
             {
-                if (count[i] == 2 && maxIdx != i)
+                if (count[i] == 2 && maxIdx != i + 1)
                 {
                     temp = i + 1;
                     break;

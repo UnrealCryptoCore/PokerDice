@@ -1512,6 +1512,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 459856648}
+  - component: {fileID: 459856649}
   m_Layer: 5
   m_Name: ButtonRollHint
   m_TagString: Untagged
@@ -1532,6 +1533,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1145287668}
+  - {fileID: 788860816}
   m_Father: {fileID: 411317735}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -1539,6 +1541,21 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 400, y: 400}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &459856649
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 459856647}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d85325e37ffc1fc8e936484587baa357, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Text:
+  - {fileID: 1145287667}
+  - {fileID: 788860815}
 --- !u!1 &499933164
 GameObject:
   m_ObjectHideFlags: 0
@@ -2980,11 +2997,11 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1145287668}
+  m_Father: {fileID: 459856648}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -25.8}
+  m_AnchoredPosition: {x: 0, y: -5.7999973}
   m_SizeDelta: {x: 400, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &788860817
@@ -3007,7 +3024,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Click the dice to throw it again!
+  m_text: Click the dice you want  to throw again!
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -4940,8 +4957,7 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 788860816}
+  m_Children: []
   m_Father: {fileID: 459856648}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -6410,7 +6426,7 @@ MonoBehaviour:
   CheckOrCallButton: {fileID: 994982416}
   RollDiceButton: {fileID: 1184312048}
   EndButton: {fileID: 989554674}
-  DiceHint: {fileID: 459856647}
+  DiceHint: {fileID: 459856649}
   BettingSlider: {fileID: 1038989104}
   _chat: {fileID: 1182102578}
   _chatInput: {fileID: 1549002288}
@@ -6858,7 +6874,7 @@ ParticleSystem:
   emitterVelocityMode: 1
   looping: 0
   prewarm: 0
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   startDelay:
@@ -14389,6 +14405,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ec3ebea946adcc858a48d88ba1b9ba6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _text: {fileID: 0}
 --- !u!1 &2107086350
 GameObject:
   m_ObjectHideFlags: 0

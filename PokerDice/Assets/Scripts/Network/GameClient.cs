@@ -187,6 +187,11 @@ public class GameClient
         GameManager.Instance.AddChatMesage(packet.sender, packet.msg);
         return null;
     }
+    public void QuitGame()
+    {
+        _game = null;
+        _gameid = null;
+    }
     public bool Connected => _conneted;
 
     public PokerGame Game => _game;

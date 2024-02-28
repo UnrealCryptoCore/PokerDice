@@ -52,7 +52,7 @@ public class UIDie : MonoBehaviour
             return;
         }
         var dice = GameManager.Instance.Dice[diceNumber];
-        if (!dice.Selectabe)
+        if (!dice.Selectable)
         {
             return;
         }
@@ -68,7 +68,7 @@ public class UIDie : MonoBehaviour
             return;
         }
         var dice = GameManager.Instance.Dice[diceNumber];
-        if (!dice.Selectabe)
+        if (!dice.Selectable)
         {
             return;
         }
@@ -85,7 +85,7 @@ public class UIDie : MonoBehaviour
             return;
         }
         var dice = GameManager.Instance.Dice[diceNumber];
-        if (!dice.Selectabe)
+        if (!dice.Selectable)
         {
             return;
         }
