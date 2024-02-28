@@ -28,6 +28,7 @@ public class GameManager : MonoBehaviour, IOverlayManager
     [SerializeField] private Color PotWinTextColor;
     [SerializeField] private Slider _volumeSlider;
     [SerializeField] public ParticleSystem ParticleSystem;
+    [SerializeField] public ParticleSystem WinParticleSystem;
 
     private readonly List<Message> _messages = new();
     private const int FRAMES = 300;

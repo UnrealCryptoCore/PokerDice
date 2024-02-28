@@ -57,8 +57,15 @@ public class PokerGame
             }
             GameManager.Instance.RunDelayedAction(() =>
             {
+                if (_turn == winner) {
+                GameManager.Instance.WinParticleSystem.Play();
                 GameManager.Instance.WinScreen.SetWinner(winner, score);
-            }, 4);
+                }
+                else
+                {
+                    GameManager.Instance.HideDice();
+                }
+           }, 4);
             return;
         }
         GameManager.Instance.BettingSlider.value = _settings.minimum;

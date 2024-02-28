@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.4465878, g: 0.4964224, b: 0.57482475, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -6144,7 +6144,7 @@ ParticleSystem:
   emitterVelocityMode: 1
   looping: 0
   prewarm: 0
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   startDelay:
@@ -11191,6 +11191,7 @@ MonoBehaviour:
   PotWinTextColor: {r: 0.9762009, g: 0.61135507, b: 0.20009626, a: 1}
   _volumeSlider: {fileID: 529499924}
   ParticleSystem: {fileID: 1468545127}
+  WinParticleSystem: {fileID: 1241560026}
 --- !u!4 &1382742333
 Transform:
   m_ObjectHideFlags: 0
