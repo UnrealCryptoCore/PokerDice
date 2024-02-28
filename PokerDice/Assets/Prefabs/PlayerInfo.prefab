@@ -330,6 +330,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _text: {fileID: 3580451434318129746}
+  _score: {fileID: 3071281221770502018}
   _dice:
   - {fileID: 3372439601591487393}
   - {fileID: 4003738240777604490}

@@ -55,7 +55,10 @@ public class PokerGame
                     score = _state.players[i];
                 }
             }
-            GameManager.Instance.WinScreen.SetWinner(winner, score);
+            GameManager.Instance.RunDelayedAction(() =>
+            {
+                GameManager.Instance.WinScreen.SetWinner(winner, score);
+            }, 4);
             return;
         }
         _state.rolls = 0;
@@ -378,10 +381,12 @@ public class PokerGame
     {
         TransferFromPot(player);
         GameManager.Instance.HighlightPot();
+        GameManager.Instance.ParticleSystem.Play();
         GameManager.Instance.RunDelayedAction(() =>
         {
             GameManager.Instance.PlayerInfoBox.SetWinner(player);
-            GameManager.Instance.DiceThrow.gameObject.SetActive(true);
+            GameManager.Instance.DiceThrow.gameObject.SetActive(false);
+            GameManager.Instance.HideDice();
         }, 2);
     }
 

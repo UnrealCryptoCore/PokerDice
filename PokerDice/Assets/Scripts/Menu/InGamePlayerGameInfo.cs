@@ -6,6 +6,7 @@ using UnityEngine;
 public class InGamePlayerGameInfo : MonoBehaviour
 {
     [SerializeField] private TMP_Text _text;
+    [SerializeField] private TMP_Text _score;
     [SerializeField] private UIDie[] _dice;
     [SerializeField] private GameObject _turnMarker;
     [SerializeField] private GameObject _winMarker;
@@ -23,7 +24,8 @@ public class InGamePlayerGameInfo : MonoBehaviour
     public void UpdateScore(int score, bool money)
     {
         _money = score;
-        _text.text = _name + " " + _money + (money ? "$" : "");
+        _text.text = _name;
+        _score.text = _money + (money ? "$" : "");
     }
 
     void Start()

@@ -100,7 +100,7 @@ public class GameClient
     {
         var packet = JsonUtility.FromJson<UserRegistryPacket>(data);
         _reconnect_token = packet.token;
-        GameHandler.Instance.OverlayManager.AddMessage(1, "Succesfully registerd user.");
+        GameHandler.Instance.OverlayManager.AddMessage(1, "Succesfully registered user.");
         Debug.Log("register user");
         return null;
     }

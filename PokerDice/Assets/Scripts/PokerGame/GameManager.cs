@@ -27,6 +27,7 @@ public class GameManager : MonoBehaviour, IOverlayManager
     [SerializeField] public DiceThrow DiceThrow;
     [SerializeField] private Color PotWinTextColor;
     [SerializeField] private Slider _volumeSlider;
+    [SerializeField] public ParticleSystem ParticleSystem;
 
     private readonly List<Message> _messages = new();
     private const int FRAMES = 300;
@@ -325,4 +326,6 @@ public class GameManager : MonoBehaviour, IOverlayManager
         yield return new WaitForSeconds(seconds);
         action.Invoke();
     }
+
+    public string[] PlayerNames => _playerNames;
 }
