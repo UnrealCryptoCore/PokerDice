@@ -7,6 +7,7 @@ public class PokerGame
     private GameState _state;
     private GameSettings _settings;
     private int _turn;
+    private bool _won = false;
 
 
     public PokerGame(GameSettings settings, GameState state, int turn)
@@ -14,6 +15,7 @@ public class PokerGame
         _settings = settings;
         _state = state;
         _turn = turn;
+        _won = false;
     }
 
     public void Start(string[] playerNames)
@@ -67,6 +69,10 @@ public class PokerGame
                     score = _state.players[i];
                 }
             }
+            GameManager.Instance.DisableButtons();
+            GameManager.Instance.SetDiceActive(false);
+            GameManager.Instance.DiceHint.SetActive(false, false);
+            _won = true;
             GameManager.Instance.RunDelayedAction(() =>
             {
                 GameManager.Instance.WinParticleSystem.Play();
@@ -74,7 +80,6 @@ public class PokerGame
             }, 4);
             return;
         }
-        GameManager.Instance.BettingSlider.value = _settings.minimum;
         _state.rolls = 0;
         _state.diceRolls = new(_state.players.Count);
         for (int i = 0; i < _state.players.Count * 5; i++)
@@ -152,6 +157,10 @@ public class PokerGame
         {
             SetWinner(_state.roundPlayers[0]);
             StartGame();
+            if (_won)
+            {
+                return;
+            }
             if (_settings.betting)
             {
                 if (_state.bettingTurn < _state.roundPlayers.Count && _state.roundPlayers[_state.bettingTurn] == _turn)
@@ -195,10 +204,17 @@ public class PokerGame
         }
         GameManager.Instance.SetDiceActive(true);
         GameManager.Instance.ThrowDice(diceRolls, lastSelection);
-        GameManager.Instance.PlayerInfoBox.SetDiceSide(_state.roundPlayers[_state.turn], diceRolls);
+        GameManager.Instance.RunDelayedAction(() =>
+        {
+            GameManager.Instance.PlayerInfoBox.SetDiceSide(_state.roundPlayers[_state.turn], diceRolls);
+        }, 2);
         if (_state.rolls == 3)
         {
             NextTurn();
+        }
+        if (_won)
+        {
+            return;
         }
 
         if (_settings.betting)
@@ -235,6 +251,10 @@ public class PokerGame
             _state.bettingTurn = _state.roundPlayers.Count;
         }
         NextTurn();
+        if (_won)
+        {
+            return;
+        }
         if (_settings.betting)
         {
             if (_state.roundPlayers[_state.bettingTurn] == _turn)
@@ -348,6 +368,7 @@ public class PokerGame
         int min = Math.Max(_state.raise, _settings.minimum);
         int max = Math.Min(_settings.maximum, _state.players[_turn]);
         GameManager.Instance.EnableRoundButtons(min, max, _state.players[_turn] < min);
+        GameManager.Instance.BettingSlider.value = min;
     }
 
     private void NextTurn()

@@ -57,7 +57,6 @@ public class GameManager : MonoBehaviour, IOverlayManager
 
     void Start()
     {
-        //SetDiceActive(false);
         StartCoroutine(MessageCoroutine());
     }
 
@@ -241,6 +240,9 @@ public class GameManager : MonoBehaviour, IOverlayManager
 
     public void SendChatMessage()
     {
+        if (_chatInput.text == "") {
+            return;
+        }
         GameHandler.Instance.client.SendChatMessage(_chatInput.text);
         _chatInput.text = "";
     }
