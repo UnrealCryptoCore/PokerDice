@@ -64,7 +64,7 @@ public class GameManager : MonoBehaviour, IOverlayManager
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && DiceHint.Text[1].activeSelf)
+        if (Input.GetKeyDown(KeyCode.Space) && DiceHint.gameObject.activeSelf && DiceHint.Text[0].activeSelf)
         {
             GameHandler.Instance.client.PlayerRollDice();
             DisableButtons();
@@ -174,14 +174,18 @@ public class GameManager : MonoBehaviour, IOverlayManager
         DiceHint.Deactivate();
     }
 
-    public void EnableRoundButtons(int min, int max)
+    public void EnableRoundButtons(int min, int max, bool foldOnly)
     {
+        FoldButton.interactable = true;
+        if (foldOnly)
+        {
+            return;
+        }
         BetOrRaiseButton.interactable = true;
         BettingSlider.interactable = true;
         BettingSlider.minValue = min;
         BettingSlider.maxValue = max;
         CheckOrCallButton.interactable = true;
-        FoldButton.interactable = true;
     }
 
     public void SetPotMoney(int money)

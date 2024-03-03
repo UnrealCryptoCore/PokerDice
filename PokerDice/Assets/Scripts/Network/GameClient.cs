@@ -54,6 +54,7 @@ public class GameClient
     public void CloseConnection()
     {
         _client.CloseConnection();
+        _conneted = false;
     }
 
     public void RequestGameStart()
@@ -192,7 +193,7 @@ public class GameClient
         _game = null;
         _gameid = null;
     }
-    public bool Connected => _conneted;
+    public bool Connected => _conneted && _client.Connected;
 
     public PokerGame Game => _game;
 

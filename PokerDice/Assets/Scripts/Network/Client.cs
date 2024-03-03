@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
@@ -9,7 +8,7 @@ using UnityEngine;
 public class Client
 {
     public const string SPLITTER = "#";
-    private readonly TcpClient _client;
+    private TcpClient _client;
     private NetworkStream _stream;
     private IPEndPoint _ip;
     private bool _running;
@@ -19,14 +18,27 @@ public class Client
 
     public Client()
     {
-        _client = new();
         _running = false;
         _packetHandlers = new();
     }
 
     public void StartConnection(string hostname)
     {
-        _ip = new(IPAddress.Parse(hostname), 12345);
+        _client = new();
+        bool b = IPAddress.TryParse(hostname, out IPAddress address);
+        if (!b)
+        {
+            IPHostEntry entry = Dns.GetHostEntry(hostname);
+            if (entry.AddressList.Length > 0)
+            {
+                address = entry.AddressList[0];
+            }
+            else
+            {
+                throw new SocketException();
+            }
+        }
+        _ip = new(address, 12345);
         _client.Connect(_ip);
         _stream = _client.GetStream();
         _running = true;
@@ -51,17 +63,20 @@ public class Client
                 //Debug.LogError("Server unreachable");
                 continue;
             }
-            if (msgs.Length == 0) {
+            if (msgs.Length == 0)
+            {
                 continue;
             }
             bool b = !msgData.EndsWith(SPLITTER);
             if (b) // checking if last packet is completly here else wait for the next bytes
             {
                 msgData = msgs[^1];
-            } else {
+            }
+            else
+            {
                 msgData = "";
             }
-            for(int i = 0; i < (b ? msgs.Length - 1 : msgs.Length); i++)
+            for (int i = 0; i < (b ? msgs.Length - 1 : msgs.Length); i++)
             {
                 if (msgs[i] == "")
                 {
@@ -96,7 +111,8 @@ public class Client
         _stream.Write(bytes);
     }
 
-    public void CloseConnection() {
+    public void CloseConnection()
+    {
         _running = false;
         _client.Close();
     }
@@ -112,4 +128,5 @@ public class Client
         _stream.Write(bytes);
     }
 
+    public bool Connected => _client != null;
 }

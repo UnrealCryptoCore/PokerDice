@@ -1,7 +1,6 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
-using System.Collections;
 
 public class PokerGame
 {
@@ -34,6 +33,7 @@ public class PokerGame
         else
         {
             GameManager.Instance.ClearPot();
+            Debug.Log(_state.roundPlayers.Count + " " + _turn + " " + _state.turn);
             if (_state.roundPlayers[_state.turn] == _turn)
             {
                 EnableDiceRollButtons();
@@ -43,7 +43,19 @@ public class PokerGame
 
     public void StartGame()
     {
-        if (_state.games == _settings.maxRounds)
+        bool below = false;
+        if (_settings.betting)
+        {
+            for (int i = 0; i < _state.players.Count; i++)
+            {
+                if (_state.players[i] < _settings.minimum)
+                {
+                    below = true;
+                    break;
+                }
+            }
+        }
+        if (_state.games == _settings.maxRounds || below)
         {
             int winner = 0;
             int score = 0;
@@ -57,15 +69,9 @@ public class PokerGame
             }
             GameManager.Instance.RunDelayedAction(() =>
             {
-                if (_turn == winner) {
                 GameManager.Instance.WinParticleSystem.Play();
                 GameManager.Instance.WinScreen.SetWinner(winner, score);
-                }
-                else
-                {
-                    GameManager.Instance.HideDice();
-                }
-           }, 4);
+            }, 4);
             return;
         }
         GameManager.Instance.BettingSlider.value = _settings.minimum;
@@ -148,7 +154,7 @@ public class PokerGame
             StartGame();
             if (_settings.betting)
             {
-                if (_state.roundPlayers[_state.bettingTurn] == _turn)
+                if (_state.bettingTurn < _state.roundPlayers.Count && _state.roundPlayers[_state.bettingTurn] == _turn)
                 {
                     EnableRoundButtons();
                     GameManager.Instance.CheckOrCallButton.interactable = false;
@@ -157,7 +163,7 @@ public class PokerGame
             }
             else
             {
-                if (_state.roundPlayers[_state.turn] == _turn)
+                if (_state.bettingTurn < _state.roundPlayers.Count && _state.roundPlayers[_state.turn] == _turn)
                 {
                     EnableDiceRollButtons();
                 }
@@ -234,6 +240,11 @@ public class PokerGame
             if (_state.roundPlayers[_state.bettingTurn] == _turn)
             {
                 EnableRoundButtons();
+                if (_state.rolls == 0 && _state.turn == 0)
+                {
+                    GameManager.Instance.FoldButton.interactable = false;
+                    GameManager.Instance.CheckOrCallButton.interactable = false;
+                }
             }
         }
         else
@@ -334,7 +345,9 @@ public class PokerGame
 
     private void EnableRoundButtons()
     {
-        GameManager.Instance.EnableRoundButtons(Math.Max(_state.raise, _settings.minimum), Math.Min(_settings.maximum, _state.players[_turn]));
+        int min = Math.Max(_state.raise, _settings.minimum);
+        int max = Math.Min(_settings.maximum, _state.players[_turn]);
+        GameManager.Instance.EnableRoundButtons(min, max, _state.players[_turn] < min);
     }
 
     private void NextTurn()
@@ -394,7 +407,7 @@ public class PokerGame
         {
             GameManager.Instance.PlayerInfoBox.SetWinner(player);
             GameManager.Instance.DiceThrow.gameObject.SetActive(false);
-            GameManager.Instance.HideDice();
+            //GameManager.Instance.HideDice();
         }, 2);
     }
 
